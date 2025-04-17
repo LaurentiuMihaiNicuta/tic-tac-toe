@@ -115,6 +115,9 @@ const players = [x, o];
 const UI = (() => {
   const UIboard = document.getElementById("board");
   const UIreset = document.getElementById("reset");
+  const messageContainer = document.createElement("div");
+  messageContainer.classList.add("message");
+  document.querySelector(".container").insertBefore(messageContainer, UIboard);
 
   const renderTable = () => {
     UIboard.innerHTML = "";
@@ -123,11 +126,20 @@ const UI = (() => {
         let cell = document.createElement("div");
         cell.textContent = gameBoard.getBoard()[i][j];
         cell.classList.add("cell");
+        if (gameBoard.getBoard()[i][j] === "x") {
+          cell.classList.add("x");
+        } else if (gameBoard.getBoard()[i][j] === "o") {
+          cell.classList.add("o");
+        }
         cell.dataset.row = i;
         cell.dataset.col = j;
         UIboard.appendChild(cell);
       }
     }
+  };
+
+  const displayMessage = (message) => {
+    messageContainer.textContent = message;
   };
 
   renderTable();
@@ -146,6 +158,14 @@ const UI = (() => {
       gameControl.switchTurns(players);
 
       renderTable();
+      const winner = gameControl.winCheck();
+      if (winner === "x") {
+        displayMessage("X Wins!");
+      } else if (winner === "o") {
+        displayMessage("O Wins!");
+      } else if (gameBoard.isBoardFull()) {
+        displayMessage("It's a Draw!");
+      }
     }
   });
 
@@ -154,6 +174,7 @@ const UI = (() => {
     gameControl.resetGame();
     x.setTurn(true);
     o.setTurn(false);
+    displayMessage("");
     renderTable();
   });
 })();
